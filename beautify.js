@@ -796,7 +796,15 @@ function js_beautify(js_source_text, options) {
                 break;
             }
 
-            if (token_text === 'function') {
+			// Public Function Hack
+			if (token_text === 'public') {
+				output.push('\n');
+				print_token();
+                print_single_space();
+                break;
+			}
+			
+            if (token_text === 'function' && last_text !== 'public') {
                 if (flags.var_line) {
                     flags.var_line_reindented = true;
                 }
@@ -830,7 +838,7 @@ function js_beautify(js_source_text, options) {
             }
 
             prefix = 'NONE';
-
+			
             if (last_type === 'TK_END_BLOCK') {
 
                 if (!in_array(token_text.toLowerCase(), ['else', 'catch', 'finally'])) {
@@ -888,7 +896,7 @@ function js_beautify(js_source_text, options) {
                 if ((last_type === 'TK_START_EXPR' || last_text === '=' || last_text === ',') && token_text === 'function') {
                     // no need to force newline on 'function': (function
                     // DONOTHING
-                } else if (token_text === 'function' && last_text == 'new') {
+                } else if (token_text === 'function' && (last_text == 'new' || last_text === 'public')) {
                     print_single_space();
                 } else if (last_text === 'return' || last_text === 'throw') {
                     // no newline between 'return nnn'
