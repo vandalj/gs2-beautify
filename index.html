@@ -180,6 +180,7 @@ label {
 
 <script src="beautify.js"></script>
 <script src="beautify-html.js"></script>
+
 <script src="tests/sanitytest.js"></script>
 <script src="tests/beautify-tests.js"></script>
 <script src="unpackers/javascriptobfuscator_unpacker.js"></script>
@@ -193,26 +194,15 @@ var the = {
     beautify_in_progress: false
 };
 
-function run_tests() {
-    var st = new SanityTest();
-    run_beautifier_tests(st);
-    JavascriptObfuscator.run_tests(st);
-    P_A_C_K_E_R.run_tests(st);
-    Urlencoded.run_tests(st);
-    MyObfuscate.run_tests(st);
-    $('#testresults').html(st.results()).show();
-}
-
-
 function any(a, b) {
     return a || b;
 }
 
 function read_settings_from_cookie() {
-    $('#tabsize').val(any($.cookie('tabsize'), '4'));
+    $('#tabsize').val(any($.cookie('tabsize'), '2'));
     $('#brace-style').val(any($.cookie('brace-style'), 'collapse'));
-    $('#detect-packers').attr('checked', $.cookie('detect-packers') !== 'off');
-    $('#preserve-newlines').attr('checked', $.cookie('preserve-newlines') !== 'off');
+    $('#detect-packers').attr('checked', $.cookie('detect-packers') === 'off');
+    $('#preserve-newlines').attr('checked', $.cookie('preserve-newlines') === 'off');
     $('#keep-array-indentation').attr('checked', $.cookie('keep-array-indentation') === 'on');
 }
 
@@ -295,7 +285,7 @@ function beautify() {
         );
     } else {
         var v = js_beautify(unpacker_filter(source), opts);
-        $('#source').val(v);
+        $('#source').val(js_beautify(v, opts));
     }
 
     the.beautify_in_progress = false;
@@ -310,7 +300,7 @@ $(function() {
 
     read_settings_from_cookie();
 
-    var default_text = "// This is just a sample script. Paste your real code here.\nif ('this_is'==/an_example/){of_beautifer();}else{var a=b?(c%d):e[f];}";
+    var default_text = "function onActionServerSide(a){if(a==\"test\"){player.triggerclient(this.name,\"hello world\");}}\n//#CLIENTSIDE\nfunction onCreated(){triggerserver(\"gui\", this.name, 123);}function onActionClientSide(b){player.chat=b;}";
     $('#source').val(default_text).bind('click focus', function () {
         if (this.value == default_text) {
             this.value = '';
@@ -335,11 +325,11 @@ $(function() {
       <fieldset id="options">
           <ul>
           <li><select name="tabsize" id="tabsize">
-            <option value="1">indent with a tab character</option>
-            <option value="2">indent with 2 spaces</option>
-            <option value="3">indent with 3 spaces</option>
-            <option value="4">indent with 4 spaces</option>
-            <option value="8">indent with 8 spaces</option>
+            <option value="1">Indent with a tab character</option>
+            <option value="2">Indent with 2 spaces</option>
+            <option value="3">Indent with 3 spaces</option>
+            <option value="4">Indent with 4 spaces</option>
+            <option value="8">Indent with 8 spaces</option>
           </select></li>
           <li><select id="brace-style">
             <option value="collapse">Braces with control statement</option>
@@ -347,60 +337,20 @@ $(function() {
             <option value="end-expand">End braces on own line</option>
           </select></li>
           <li><input class="checkbox" type="checkbox" id="preserve-newlines" /><label for="preserve-newlines"> Preserve empty lines?</label><br /></li>
-          <li><input class="checkbox" type="checkbox" id="detect-packers" /><label for="detect-packers"> Detect packers and obfuscators?</label><br /></li>
           <li><input class="checkbox" type="checkbox" id="keep-array-indentation" /><label for="keep-array-indentation"> Keep array indentation?</label></li>
           </ul>
       </fieldset>
 
-      <p><strong>Beautify, unpack or deobfuscate JavaScript.</strong>.</p>
-      <p>All of the source code is available on the <a href="http://github.com/einars/js-beautify">github</a>, and we have a <a href="https://github.com/einars/js-beautify/raw/master/python/jsbeautifier.py">command-line version</a> (written in python) as well.
-
-      <p>JSBeautifier is — and always will be — completely free and open, and your thanks, flattrs and donations are very heartwarming — thank you all so much!
-      <div style="position: relative; height: 40px">
-      <form style="position: absolute; left: 3px;" action="https://www.paypal.com/cgi-bin/webscr" method="post">
-        <input type="hidden" name="cmd" value="_s-xclick">
-        <input type="hidden" name="hosted_button_id" value="TL28UJK2ARCUJ">
-        <input style="border:0" type="image" src="http://spicausis.lv/misc/paypal-donate.gif" name="submit" alt="PayPal - The safer, easier way to pay online!">
-        <img alt="" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
-      </form>
-      <p style="position: absolute; left: 120px; top: 1px"><a href="http://flattr.com/thing/94550/jsbeautifier-org" target="_blank"><img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr" /></a></p>
-      </div>
-
-      <p>Browser extensions and other uses:</p>
-      <ul id="uses">
-
-      <li>A <a href="javascript:(function(){s=document.getElementsByTagName('SCRIPT');tx='';sr=[];for(i=0;i<s.length;i++){with(s.item(i)){t=text;if(t){tx+=t;}else{sr.push(src)};}};with(window.open()){document.write('<textarea id=&quot;t&quot;>'+(sr.join(&quot;\n&quot;))+&quot;\n\n-----\n\n&quot;+tx+'</textarea><script src=&quot;http://jsbeautifier.org/beautify.js&quot;></script><script>with(document.getElementById(&quot;t&quot;)){value=js_beautify(value);with(style){width=&quot;99%&quot;;height=&quot;99%&quot;;borderStyle=&quot;none&quot;;}};</script>');document.close();}})();"><strong>bookmarklet</strong></a> (drag it to your bookmarks) by Ichiro Hiroshi to see all scripts used on the page,</li>
-
-      <li><strong>Chrome</strong>: <a href="https://github.com/rixth/jsbeautify-for-chrome">jsbeautify-for-chrome</a> by Tom Rix,</li>
-      <li><strong>Chrome</strong>: <a href="https://chrome.google.com/webstore/detail/piekbefgpgdecckjcpffhnacjflfoddg">Pretty Beautiful JavaScript</a> by Will McSweeney,</li>
-      <li><strong>Safari</strong>: <a href="http://spadin.github.com/js-beautify-safari-extension">Safari extension</a> by Sandro Padin,</li>
-      <li><strong>Opera</strong>: <a href="https://addons.opera.com/addons/extensions/details/readable-javascript/">Readable JavaScript</a> (<a href="https://github.com/Dither/readable-javascript">github</a>) by Dither,</li>
-      <li><strong>Opera</strong>: <a href="https://addons.opera.com/addons/extensions/details/source/">Source</a> extension by Deathamns,</li>
-      <li><a style="font-weight: bold" href="http://fiddler2.com/">Fiddler</a> proxy: <a href="http://fiddler2.com/Fiddler2/extensions.asp">JavaScript Formatter addon</a>,
-      <li><strong>gEdit</strong> <a href="http://github.com/nagaozen/gedit-tunnings/">tips by Fabio Nagao</a>,</li>
-      <li><strong>Akelpad</strong> <a href="http://akelpad.sourceforge.net/forum/viewtopic.php?p=11246#11246">extension</a> by Infocatcher,</li>
-      <li>Beautifier in <a style="font-weight: bold" href="http://sethmason.com/2011/04/28/jsbeautify-in-emacs.html">Emacs</a> write-up by Seth Mason,</li>
-      <li><a style="font-weight:bold" href="http://c9.io">Cloud9</a>, a lovely IDE running in a browser, working in the node/cloud, uses jsbeautifier (<a href="https://github.com/ajaxorg/cloud9">github</a>),</li>
-      <li><a style="font-weight:bold" href="http://www.symetronapps.com/shrinker.html">Shrinker</a>, a non-free JavaScript packer for Mac. I&nbsp;haven't used it, so I&nbsp;have no idea if it's any good.</li>
-      <li class="writeme">Doing anything interesting? Write me to einar@jsbeautifier.org and I'll include your link.</li>
-      </ul>
-
       <div id="footer">
 
-          <p class="me-me-me">Written by Einar Lielmanis, <a href="mailto:einar@jsbeautifier.org">einar@jsbeautifier.org</a></p>
-          <p class="contributors">with a great help of <a href="http://jason.diamond.name/weblog/">Jason&nbsp;Diamond</a>, Patrick&nbsp;Hof, Nochum&nbsp;Sossonko, Andreas&nbsp;Schneider, Dave&nbsp;Vasilevsky, <a href="http://my.opera.com/Vital/blog/">Vital&nbsp;Batmanov,</a> Ron&nbsp;Baldwin, Gabriel&nbsp;Harrison, <a href="http://shullian.com">Chris&nbsp;J.&nbsp;Shull</a>, <a href="http://mathiasbynens.be/">Mathias Bynens</a> and others.
-          </p>
-
-          <p style="text-align:right">
-          <a href="#" style="color: #ccc; border-bottom: 1px dashed #ccc; text-decoration: none;" onclick="run_tests(); return false;">Run the tests</a>
-          </p>
-          <pre id="testresults"></pre>
+		  <p class="me-me-me">Modified by fp4 (fowlplay4) to support GS2 properly.</p>
+          <p class="contributors">Forked off and based on the source of <a href="http://jsbeautifier.org">jsbeautifier.org</a>.</p>
 
       </div>
 
     </div>
     <div id="beauty">
-        <button id="submit"><strong>Beautify JavaScript</strong> <em>(ctrl-enter)</em></button>
+        <button id="submit"><strong>Beautify GS2</strong> <em>(ctrl-enter)</em></button>
         <fieldset id="textarea-wrap">
             <textarea id="source"></textarea>
         </fieldset>
