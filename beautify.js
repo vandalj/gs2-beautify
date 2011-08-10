@@ -4,6 +4,7 @@
  JS Beautifier
 ---------------
 
+  Modified by fp4 (fowlplay4) to support GS2 symbols (@, SPC, TAB, NL).
 
   Written by Einar Lielmanis, <einar@jsbeautifier.org>
       http://jsbeautifier.org/
@@ -232,7 +233,6 @@ function js_beautify(js_source_text, options) {
         var c = input.charAt(parser_pos);
         parser_pos += 1;
 
-
         var keep_whitespace = opt_keep_array_indentation && is_array(flags.mode);
 
         if (keep_whitespace) {
@@ -374,7 +374,7 @@ function js_beautify(js_source_text, options) {
         if (c === ';') {
             return [c, 'TK_SEMICOLON'];
         }
-
+		
         if (c === '/') {
             var comment = '';
             // peek for comment /* ... */
@@ -548,7 +548,7 @@ function js_beautify(js_source_text, options) {
             }
             return ['-->', 'TK_COMMENT'];
         }
-
+		
         if (in_array(c, punct)) {
             while (parser_pos < input_length && in_array(c + input.charAt(parser_pos), punct)) {
                 c += input.charAt(parser_pos);
@@ -593,7 +593,7 @@ function js_beautify(js_source_text, options) {
     wordchar = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$'.split('');
     digits = '0123456789'.split('');
 
-    punct = '+ - * / @ % & ++ -- = += -= *= /= %= == === != !== > < >= <= >> << >>> >>>= >>= <<= && &= | || ! !! , : ? ^ ^= |= ::'.split(' ');
+    punct = '+ - * / @ % & ++ -- = += -= *= /= @= %= == === != !== > < >= <= >> << >>> >>>= >>= <<= && &= | || ! !! , : ? ^ ^= |= ::'.split(' ');
 
     // words which should always start on new line.
     line_starters = 'continue,try,throw,return,var,if,switch,case,default,for,while,break,function'.split(',');
@@ -870,7 +870,10 @@ function js_beautify(js_source_text, options) {
                     prefix = 'NEWLINE';
                 }
             }
-
+			if (in_array(token_text, ['SPC', 'NL', 'TAB'])) {
+				prefix = 'SPACE';
+            }			
+			
             if (flags.if_line && last_type === 'TK_END_EXPR') {
                 flags.if_line = false;
             }
@@ -1135,7 +1138,9 @@ function js_beautify(js_source_text, options) {
             break;
 
         case 'TK_COMMENT':
-
+            if (token_text === '//#CLIENTSIDE') {
+			  output.push('\n');
+			}
             // print_newline();
             if (wanted_newline) {
                 print_newline();
