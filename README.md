@@ -1,4 +1,6 @@
-# JS Beautifier
+# JS Beautifier (GS2 Edition)
+
+Modifications have been made to the index and beautify.js file to support features in GS2 that aren't present in JavaScript. Everything else is still in tact.
 
 ...or, more specifically, all of the code powering
 [jsbeautifier.org](http://jsbeautifier.org/).
